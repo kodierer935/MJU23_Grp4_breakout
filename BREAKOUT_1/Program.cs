@@ -1,91 +1,94 @@
-﻿using System;
-
-
-namespace BREAKOUT_1
+﻿ 
+using System;
+using System.Threading.Channels;
+namespace BREAKOUT_1 
 {
-    internal class Program
+    public class Ball
     {
-        
-       
+        public int X { get; set; }
+        public int Y { get; set; }
+        public int ChangeX { get; set; }
+        public int ChangeY { get; set; }
+
+        public Ball(int x, int y, int changeX, int changeY)
+        {
+            X = x;
+            Y = y;
+            ChangeX = changeX;
+            ChangeY = changeY;
+        }
+    }
+
+    public class Brick
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+        public bool IsVisible { get; set; }
+
+        public Brick(int x, int y)
+        {
+            X = x;
+            Y = y;
+            IsVisible = true;
+        }
+    }
+    public class Program
+    {
         static void Main(string[] args)
         {
-            //Console.WindowWidth = 14;
-            //Console.WindowHeight = 16;
-            
-            string Intact = "[_____]";
-            string Broken = "     ";
+            Ball ball = new Ball(Console.WindowWidth / 2, Console.WindowHeight - 2, 1, -1);
 
-            int AntalRad = 8;
-            int AntalBrickor = 14;
-            int i ;
-            int j ;
-            int y = 3;
-            int x = 7;
-            string[,] BrickLista = SkapaPlan(AntalRad, AntalBrickor);
-            string[,] boll = new string[x, y];
-            i = x;
-            j = y;
-            while(true)
+            int brickRows = 8;
+            int brickCols = Console.WindowWidth / 5;
+            Brick[,] bricks = new Brick[brickRows, brickCols];
+
+            for (int i = 0; i < brickRows; i++)
             {
-                // boll implementering
+                for (int j = 0; j < brickCols; j++)
+                {
+                    bricks[i, j] = new Brick(j * 5, i * 2);
+                }
+            }
 
-                SkrivUtSpelplan(BrickLista);
-                Thread.Sleep(1000);
-                if (x == i && y == j)
-                    TaBortBricka(BrickLista, x, y);
+            while (true)
+            {
                 Console.Clear();
-            }
-            
-            
-        }
-        static string[,] SkapaPlan(int AntalRad, int AntalBrickor)
-        {
-            string Intact = "[___]";
-            string[,] SkapaPlan = new string[AntalRad, AntalBrickor];
 
-            for (int i = 0; i < AntalRad; i++)
-            {
-                for (int j = 0; j < AntalBrickor; j++)
+                ball.X += ball.ChangeX;
+                ball.Y += ball.ChangeY;
+
+                if (ball.X <= 1 || ball.X >= Console.WindowWidth - 1)
+                    ball.ChangeX *= -1;
+                if (ball.Y <= 0 || ball.Y >= Console.WindowHeight - 1)
+                    ball.ChangeY *= -1;
+
+                for (int i = 0; i < brickRows; i++)
                 {
-                    SkapaPlan[i,j] = Intact;
+                    for (int j = 0; j < brickCols; j++)
+                    {
+                        Brick brick = bricks[i, j];
+                        if (brick.IsVisible && ball.X >= brick.X && ball.X < brick.X + 5 && ball.Y == brick.Y)
+                        {
+                            brick.IsVisible = false;
+                            ball.ChangeY *= -1;
+                        }
+                    }
                 }
-            }
-            return SkapaPlan;
-        }
-        static void SkrivUtSpelplan(string[,] SkapaPlan)
-        {
-            for (int i = 0; i < SkapaPlan.GetLength(0); i++)
-            {
-                for (int j = 0; j < SkapaPlan.GetLength(1); j++)
+
+                Console.SetCursorPosition(ball.X, ball.Y);
+                Console.Write("*");
+
+                foreach (var brick in bricks)
                 {
-                    Console.Write(SkapaPlan[i, j]);
+                    if (brick.IsVisible)
+                    {
+                        Console.SetCursorPosition(brick.X, brick.Y);
+                        Console.Write("[___]");
+                    }
                 }
-                Console.WriteLine();
+
+                Thread.Sleep(50);
             }
         }
-
-        static void TaBortBricka(string[,] SpelPlan, int rad, int kolumn)
-        {
-            string Broken = "     ";
-            if (rad >= 0 && rad < SpelPlan.GetLength(0) && kolumn >= 0 && kolumn < SpelPlan.GetLength(1))
-            {
-                SpelPlan[rad, kolumn] = Broken;
-            }  
-        }
-
-        
-        //static string[,] SpelPlan (int AntalRad, int AntalBrickor)
-        //{
-        //    string[,] SpelPlan = new string[AntalRad, AntalBrickor];
-
-        //    for(int i = 0 ; i < AntalBrickor; i++)
-        //    {
-        //        for(int j ; j < AntalBrickor; j++)
-        //        {
-        //            SpelPlan[i,j] = "[____]";
-        //        }
-        //    }
-        //    return SpelPlan;
-        //}
     }
 }

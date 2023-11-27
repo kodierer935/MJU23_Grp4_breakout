@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Erik\\source\\repos\\BREAKOUT_1\\BREAKOUT_1\\BREAKOUT_1.csproj": {}
+    "C:\\Users\\Erik\\Source\\Repos\\kodierer935\\MJU23_Grp4_breakout\\BREAKOUT_1\\BREAKOUT_1.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Erik\\source\\repos\\BREAKOUT_1\\BREAKOUT_1\\BREAKOUT_1.csproj": {
+    "C:\\Users\\Erik\\Source\\Repos\\kodierer935\\MJU23_Grp4_breakout\\BREAKOUT_1\\BREAKOUT_1.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Erik\\source\\repos\\BREAKOUT_1\\BREAKOUT_1\\BREAKOUT_1.csproj",
+        "projectUniqueName": "C:\\Users\\Erik\\Source\\Repos\\kodierer935\\MJU23_Grp4_breakout\\BREAKOUT_1\\BREAKOUT_1.csproj",
         "projectName": "BREAKOUT_1",
-        "projectPath": "C:\\Users\\Erik\\source\\repos\\BREAKOUT_1\\BREAKOUT_1\\BREAKOUT_1.csproj",
+        "projectPath": "C:\\Users\\Erik\\Source\\Repos\\kodierer935\\MJU23_Grp4_breakout\\BREAKOUT_1\\BREAKOUT_1.csproj",
         "packagesPath": "C:\\Users\\Erik\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Erik\\source\\repos\\BREAKOUT_1\\BREAKOUT_1\\obj\\",
+        "outputPath": "C:\\Users\\Erik\\Source\\Repos\\kodierer935\\MJU23_Grp4_breakout\\BREAKOUT_1\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
