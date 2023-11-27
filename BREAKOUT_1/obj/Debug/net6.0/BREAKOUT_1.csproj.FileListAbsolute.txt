@@ -1,0 +1,14 @@
+C:\Users\Erik\source\repos\BREAKOUT_1\BREAKOUT_1\obj\Debug\net6.0\BREAKOUT_1.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Erik\source\repos\BREAKOUT_1\BREAKOUT_1\obj\Debug\net6.0\BREAKOUT_1.AssemblyInfoInputs.cache
+C:\Users\Erik\source\repos\BREAKOUT_1\BREAKOUT_1\obj\Debug\net6.0\BREAKOUT_1.AssemblyInfo.cs
+C:\Users\Erik\source\repos\BREAKOUT_1\BREAKOUT_1\obj\Debug\net6.0\BREAKOUT_1.csproj.CoreCompileInputs.cache
+C:\Users\Erik\source\repos\BREAKOUT_1\BREAKOUT_1\bin\Debug\net6.0\BREAKOUT_1.exe
+C:\Users\Erik\source\repos\BREAKOUT_1\BREAKOUT_1\bin\Debug\net6.0\BREAKOUT_1.deps.json
+C:\Users\Erik\source\repos\BREAKOUT_1\BREAKOUT_1\bin\Debug\net6.0\BREAKOUT_1.runtimeconfig.json
+C:\Users\Erik\source\repos\BREAKOUT_1\BREAKOUT_1\bin\Debug\net6.0\BREAKOUT_1.dll
+C:\Users\Erik\source\repos\BREAKOUT_1\BREAKOUT_1\bin\Debug\net6.0\BREAKOUT_1.pdb
+C:\Users\Erik\source\repos\BREAKOUT_1\BREAKOUT_1\obj\Debug\net6.0\BREAKOUT_1.dll
+C:\Users\Erik\source\repos\BREAKOUT_1\BREAKOUT_1\obj\Debug\net6.0\refint\BREAKOUT_1.dll
+C:\Users\Erik\source\repos\BREAKOUT_1\BREAKOUT_1\obj\Debug\net6.0\BREAKOUT_1.pdb
+C:\Users\Erik\source\repos\BREAKOUT_1\BREAKOUT_1\obj\Debug\net6.0\BREAKOUT_1.genruntimeconfig.cache
+C:\Users\Erik\source\repos\BREAKOUT_1\BREAKOUT_1\obj\Debug\net6.0\ref\BREAKOUT_1.dll
