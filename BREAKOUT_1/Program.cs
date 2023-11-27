@@ -32,13 +32,13 @@ namespace BREAKOUT_1
             IsVisible = true;
         }
     }
-    public class Program
+    internal class Program
     {
         static void Main(string[] args)
         {
             Ball ball = new Ball(Console.WindowWidth / 2, Console.WindowHeight - 2, 1, -1);
 
-            int brickRows = 8;
+            int brickRows = 4;
             int brickCols = Console.WindowWidth / 5;
             Brick[,] bricks = new Brick[brickRows, brickCols];
 
@@ -57,9 +57,9 @@ namespace BREAKOUT_1
                 ball.X += ball.ChangeX;
                 ball.Y += ball.ChangeY;
 
-                if (ball.X <= 1 || ball.X >= Console.WindowWidth - 1)
+                if (ball.X <= 0 || ball.X >= Console.WindowWidth - 2)
                     ball.ChangeX *= -1;
-                if (ball.Y <= 0 || ball.Y >= Console.WindowHeight - 1)
+                if (ball.Y < 0 || ball.Y >= Console.WindowHeight - 2)
                     ball.ChangeY *= -1;
 
                 for (int i = 0; i < brickRows; i++)
@@ -74,9 +74,15 @@ namespace BREAKOUT_1
                         }
                     }
                 }
+                if (Console.WindowHeight >= ball.Y && Console.WindowWidth >= ball.X)
+                {
+                    int clampedX = Math.Clamp(ball.X, 0, Console.WindowWidth - 1);
+                    int clampedY = Math.Clamp(ball.Y, 0, Console.WindowHeight - 1);
 
-                Console.SetCursorPosition(ball.X, ball.Y);
-                Console.Write("*");
+                    Console.SetCursorPosition(clampedX, clampedY);
+                    Console.Write("*");
+                }
+                    
 
                 foreach (var brick in bricks)
                 {
@@ -87,7 +93,7 @@ namespace BREAKOUT_1
                     }
                 }
 
-                Thread.Sleep(50);
+                Thread.Sleep(5);
             }
         }
     }
