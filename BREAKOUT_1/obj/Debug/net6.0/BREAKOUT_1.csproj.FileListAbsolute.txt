@@ -26,3 +26,17 @@ C:\Users\Erik\Source\Repos\kodierer935\MJU23_Grp4_breakout\BREAKOUT_1\obj\Debug\
 C:\Users\Erik\Source\Repos\kodierer935\MJU23_Grp4_breakout\BREAKOUT_1\obj\Debug\net6.0\BREAKOUT_1.pdb
 C:\Users\Erik\Source\Repos\kodierer935\MJU23_Grp4_breakout\BREAKOUT_1\obj\Debug\net6.0\BREAKOUT_1.genruntimeconfig.cache
 C:\Users\Erik\Source\Repos\kodierer935\MJU23_Grp4_breakout\BREAKOUT_1\obj\Debug\net6.0\ref\BREAKOUT_1.dll
+C:\Users\moham\Source\Repos\MJU23_Grp4_breakout\BREAKOUT_1\bin\Debug\net6.0\BREAKOUT_1.exe
+C:\Users\moham\Source\Repos\MJU23_Grp4_breakout\BREAKOUT_1\bin\Debug\net6.0\BREAKOUT_1.deps.json
+C:\Users\moham\Source\Repos\MJU23_Grp4_breakout\BREAKOUT_1\bin\Debug\net6.0\BREAKOUT_1.runtimeconfig.json
+C:\Users\moham\Source\Repos\MJU23_Grp4_breakout\BREAKOUT_1\bin\Debug\net6.0\BREAKOUT_1.dll
+C:\Users\moham\Source\Repos\MJU23_Grp4_breakout\BREAKOUT_1\bin\Debug\net6.0\BREAKOUT_1.pdb
+C:\Users\moham\Source\Repos\MJU23_Grp4_breakout\BREAKOUT_1\obj\Debug\net6.0\BREAKOUT_1.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\moham\Source\Repos\MJU23_Grp4_breakout\BREAKOUT_1\obj\Debug\net6.0\BREAKOUT_1.AssemblyInfoInputs.cache
+C:\Users\moham\Source\Repos\MJU23_Grp4_breakout\BREAKOUT_1\obj\Debug\net6.0\BREAKOUT_1.AssemblyInfo.cs
+C:\Users\moham\Source\Repos\MJU23_Grp4_breakout\BREAKOUT_1\obj\Debug\net6.0\BREAKOUT_1.csproj.CoreCompileInputs.cache
+C:\Users\moham\Source\Repos\MJU23_Grp4_breakout\BREAKOUT_1\obj\Debug\net6.0\BREAKOUT_1.dll
+C:\Users\moham\Source\Repos\MJU23_Grp4_breakout\BREAKOUT_1\obj\Debug\net6.0\refint\BREAKOUT_1.dll
+C:\Users\moham\Source\Repos\MJU23_Grp4_breakout\BREAKOUT_1\obj\Debug\net6.0\BREAKOUT_1.pdb
+C:\Users\moham\Source\Repos\MJU23_Grp4_breakout\BREAKOUT_1\obj\Debug\net6.0\BREAKOUT_1.genruntimeconfig.cache
+C:\Users\moham\Source\Repos\MJU23_Grp4_breakout\BREAKOUT_1\obj\Debug\net6.0\ref\BREAKOUT_1.dll
