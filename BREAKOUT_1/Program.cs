@@ -32,7 +32,7 @@ namespace BREAKOUT_1
             IsVisible = true;
         }
     }
-        internal class Program
+    internal class Program
     {
         protected static int origRow;
         protected static int origCol;
@@ -41,7 +41,9 @@ namespace BREAKOUT_1
             origRow = Console.CursorTop;
             origCol = Console.CursorLeft;
             int poäng = 0;
+            int Lives = 3;
             int brickIndex = 0;
+            int current_level = 1;
             Ball ball = new Ball(Console.WindowWidth / 2, Console.WindowHeight - 2, 1, -1);
 
             bool IsPlaying = false;
@@ -80,6 +82,7 @@ namespace BREAKOUT_1
                     }
                     else if (command == "S" || command == "s")
                     {
+                        Console.Clear();
                         Console.WriteLine("Bye Bye !!");
                         Environment.Exit(0);
                     }
@@ -98,14 +101,25 @@ namespace BREAKOUT_1
                     {
                         Console.Clear();
                         WriteAt($"Poäng: {poäng}", 0, 20);
+                        WriteAt($"Försök: {Lives}", 0, 21);
 
                         ball.X += ball.ChangeX;
                         ball.Y += ball.ChangeY;
 
                         if (ball.X <= 0 || ball.X >= Console.WindowWidth - 2)
                             ball.ChangeX *= -1;
-                        if (ball.Y < 0 || ball.Y >= Console.WindowHeight - 2)
+                        if (ball.Y < 0)
                             ball.ChangeY *= -1;
+                        if(ball.Y >= Console.WindowHeight - 2)
+                        {
+                            Lives--;
+                            ball = new Ball(Console.WindowWidth / 2, Console.WindowHeight - 2, 1, -1);
+                        }
+                        if(Lives == 0)
+                        {
+                            poäng = Lose(poäng, out Lives, out IsPlaying, out IsPaused, out restartGame, out command);
+
+                        }                        
 
                         for (int i = 0; i < brickRows; i++)
                         {
@@ -128,6 +142,7 @@ namespace BREAKOUT_1
                                 }
                             }
                         }
+                        
 
                         if (Console.WindowHeight >= ball.Y && Console.WindowWidth >= ball.X)
                         {
@@ -138,16 +153,35 @@ namespace BREAKOUT_1
                             Console.Write("*");
                         }
 
-                        foreach (var brick in bricks)
+                        if (current_level == 1)
                         {
-                            if (brick.IsVisible)
+                            foreach (var brick in bricks)
                             {
-                                Console.SetCursorPosition(brick.X, brick.Y);
-                                Console.Write("[___]");
+                                if (brick.IsVisible)
+                                {
+                                    Console.SetCursorPosition(brick.X, brick.Y);
+                                    Console.Write("[___]");
+                                }
+                            }
+                        }else if (current_level == 2 && AllBricksInvisible(bricks) == true) 
+                        {
+                            foreach (var brick in bricks)
+                            {
+                                if (brick.IsVisible)
+                                {
+                                    Console.SetCursorPosition(brick.X, brick.Y);
+                                    Console.Write("[___]");
+                                }
                             }
                         }
                     }
 
+                    if (current_level == 2 && AllBricksInvisible(bricks) == true)
+                    {
+                        poäng = Winner(poäng, out Lives, out IsPlaying, out IsPaused, out restartGame, out command);
+                        current_level = 1;
+
+                    }
                     Pause_Func(ref IsPlaying, ref IsPaused, ref restartGame, ref command);
 
                     Thread.Sleep(50);
@@ -229,6 +263,58 @@ namespace BREAKOUT_1
                 command = Console.ReadLine();
                 return command;
             }
+
+            static int Lose(int poäng, out int Lives, out bool IsPlaying, out bool IsPaused, out bool restartGame, out string command)
+            {
+                IsPaused = false;
+                IsPlaying = false;
+                restartGame = true;
+
+                Console.Clear();
+                WriteAt($"Game Over", Console.WindowWidth / 3, Console.WindowHeight / 3);
+                WriteAt($"poäng: {poäng}", Console.WindowWidth / 3, (Console.WindowHeight / 3) + 1);
+                WriteAt("Tryck [n] för nytt spel", Console.WindowWidth / 3, (Console.WindowHeight / 3) + 2);
+                WriteAt("tryck [m] för meny", Console.WindowWidth / 3, (Console.WindowHeight / 3) + 3);
+                WriteAt("tryck [s] för att sluta", Console.WindowWidth / 3, (Console.WindowHeight / 3) + 4);
+                WriteAt($"> ", Console.WindowWidth / 3, (Console.WindowHeight / 3) + 5);
+                Console.SetCursorPosition((Console.WindowWidth / 3) + 2, (Console.WindowHeight / 3) + 5);
+                command = Console.ReadLine();
+                Lives = 3;
+                poäng = 0;
+                return poäng;
+            }
+
+            static int Winner(int poäng, out int Lives, out bool IsPlaying, out bool IsPaused, out bool restartGame, out string command)
+            {
+                IsPaused = false;
+                IsPlaying = false;
+                restartGame = true;
+
+                Console.Clear();
+                WriteAt($"** Du Vinner **", Console.WindowWidth / 3, Console.WindowHeight / 3);
+                WriteAt($" poäng: {poäng}", Console.WindowWidth / 3, (Console.WindowHeight / 3) + 1);
+                WriteAt("  Tryck [n] för nytt spel", Console.WindowWidth / 3, (Console.WindowHeight / 3) + 2);
+                WriteAt("  tryck [m] för meny", Console.WindowWidth / 3, (Console.WindowHeight / 3) + 3);
+                WriteAt("  tryck [s] för att sluta", Console.WindowWidth / 3, (Console.WindowHeight / 3) + 4);
+                WriteAt($"> ", Console.WindowWidth / 3, (Console.WindowHeight / 3) + 5);
+                Console.SetCursorPosition((Console.WindowWidth / 3) + 2, (Console.WindowHeight / 3) + 5);
+                command = Console.ReadLine();
+                Lives = 3;
+                poäng = 0;
+                return poäng;
+            }
+        }
+
+        private static bool AllBricksInvisible(Brick[,] bricks)
+        {
+            foreach (var brick in bricks)
+            {
+                if (brick.IsVisible)
+                {
+                    return false;
+                }
+            }
+            return true; 
         }
 
         public static void Meny()
