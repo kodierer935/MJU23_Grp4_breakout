@@ -1,8 +1,9 @@
-﻿
-using System;
-using System.Threading.Channels;
-namespace BREAKOUT_1
+﻿namespace BrakeOut1
 {
+
+    using System;
+    using System.Threading;
+
     public class Ball
     {
         public int X { get; set; }
@@ -19,6 +20,20 @@ namespace BREAKOUT_1
         }
     }
 
+    public class Paddle
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+        public int Length { get; set; }
+
+        public Paddle(int x, int y, int length)
+        {
+            X = x;
+            Y = y;
+            Length = length;
+        }
+    }
+
     public class Brick
     {
         public int X { get; set; }
@@ -32,17 +47,21 @@ namespace BREAKOUT_1
             IsVisible = true;
         }
     }
-        internal class Program
+
+    internal class Program
     {
         protected static int origRow;
         protected static int origCol;
+
         static void Main(string[] args)
         {
             origRow = Console.CursorTop;
             origCol = Console.CursorLeft;
             int poäng = 0;
             int brickIndex = 0;
+
             Ball ball = new Ball(Console.WindowWidth / 2, Console.WindowHeight - 2, 1, -1);
+            Paddle paddle = new Paddle(Console.WindowWidth / 2 - 3, Console.WindowHeight - 1, 6);
 
             bool IsPlaying = false;
             bool IsPaused = false;
@@ -60,11 +79,11 @@ namespace BREAKOUT_1
                     bricks[i, j] = new Brick(j * 5, i * 2);
                 }
             }
+
             while (true)
             {
                 while (IsPlaying == false)
                 {
-
                     if (command == "M" || command == "m")
                     {
                         Menu_func(out restartGame, out command);
@@ -86,7 +105,6 @@ namespace BREAKOUT_1
                     else
                     {
                         Console.WriteLine("Fel Kommand !!!");
-
                         Console.Write("> ");
                         command = Console.ReadLine();
                     }
@@ -102,9 +120,16 @@ namespace BREAKOUT_1
                         ball.X += ball.ChangeX;
                         ball.Y += ball.ChangeY;
 
+                        // Bounce på sidoväggarna
                         if (ball.X <= 0 || ball.X >= Console.WindowWidth - 2)
                             ball.ChangeX *= -1;
-                        if (ball.Y < 0 || ball.Y >= Console.WindowHeight - 2)
+
+                        // Bounce på taket
+                        if (ball.Y < 0)
+                            ball.ChangeY *= -1;
+
+                        // Bounce på paddeln
+                        if (ball.Y == paddle.Y - 1 && ball.X >= paddle.X && ball.X <= paddle.X + paddle.Length - 1)
                             ball.ChangeY *= -1;
 
                         for (int i = 0; i < brickRows; i++)
@@ -121,15 +146,21 @@ namespace BREAKOUT_1
                             }
                         }
 
+                        // Rita paddeln
+                        Console.SetCursorPosition(paddle.X, paddle.Y);
+                        Console.Write(new string('-', paddle.Length));
+
+                        // Rita bollen
                         if (Console.WindowHeight >= ball.Y && Console.WindowWidth >= ball.X)
                         {
                             int clampedX = Math.Clamp(ball.X, 0, Console.WindowWidth - 1);
                             int clampedY = Math.Clamp(ball.Y, 0, Console.WindowHeight - 1);
 
                             Console.SetCursorPosition(clampedX, clampedY);
-                            Console.Write("*");
+                            Console.Write("O");
                         }
 
+                        // Rita brickorna
                         foreach (var brick in bricks)
                         {
                             if (brick.IsVisible)
@@ -140,87 +171,71 @@ namespace BREAKOUT_1
                         }
                     }
 
-                    Pause_Func(ref IsPlaying, ref IsPaused, ref restartGame, ref command);
+                    // Rörelse av paddeln
+                    if (Console.KeyAvailable)
+                    {
+                        ConsoleKeyInfo key = Console.ReadKey(true);
+                        if (key.Key == ConsoleKey.LeftArrow && paddle.X > 0)
+                        {
+                            paddle.X--;
+                        }
+                        else if (key.Key == ConsoleKey.RightArrow && paddle.X < Console.WindowWidth - paddle.Length)
+                        {
+                            paddle.X++;
+                        }
+                        else if (key.Key == ConsoleKey.Spacebar)
+                        {
+                            IsPaused = !IsPaused;
+                            Console.Clear();
+                            if (IsPaused)
+                            {
+                                Console.WriteLine("Spel pausat. tryck 'Spacebar' för att försätta.\ntryck 'm' för att gå till meny.\ntryck 's' för att avsluta spelet.");
+                            }
+                        }
+                    }
 
-                    Thread.Sleep(5);
+                    Thread.Sleep(50);
                 }
 
                 Restart(ref ball, ref restartGame, brickRows, brickCols, ref bricks);
             }
+        }
 
-            static void Restart(ref Ball ball, ref bool restartGame, int brickRows, int brickCols, ref Brick[,] bricks)
+        static void Restart(ref Ball ball, ref bool restartGame, int brickRows, int brickCols, ref Brick[,] bricks)
+        {
+            if (restartGame)
             {
-                if (restartGame)
+                ball = new Ball(Console.WindowWidth / 2, Console.WindowHeight - 2, 1, -1);
+                bricks = new Brick[brickRows, brickCols];
+                for (int i = 0; i < brickRows; i++)
                 {
-
-                    ball = new Ball(Console.WindowWidth / 2, Console.WindowHeight - 2, 1, -1);
-                    bricks = new Brick[brickRows, brickCols];
-                    for (int i = 0; i < brickRows; i++)
+                    for (int j = 0; j < brickCols; j++)
                     {
-                        for (int j = 0; j < brickCols; j++)
-                        {
-                            bricks[i, j] = new Brick(j * 5, i * 2);
-                        }
-                    }
-
-                    restartGame = false;
-                }
-            }
-
-            static void Pause_Func(ref bool IsPlaying, ref bool IsPaused, ref bool restartGame, ref string command)
-            {
-                if (Console.KeyAvailable)
-                {
-                    ConsoleKeyInfo keyInfo = Console.ReadKey(true);
-                    if (keyInfo.Key == ConsoleKey.Spacebar)
-                    {
-                        IsPaused = !IsPaused;
-                        Console.Clear();
-                        if (IsPaused)
-                        {
-                            Console.WriteLine("Spel pausat. tryck 'Spacebar' för att försätta.\ntryck 'm' för att gå till meny.\ntryck 's' för att avsluta spelet.");
-                        }
-                    }
-                    else if (keyInfo.Key == ConsoleKey.M)
-                    {
-                        if (IsPaused)
-                        {
-                            IsPlaying = false;
-                            command = "M";
-                            IsPaused = false;
-                            restartGame = true;
-                        }
-                    }
-                    else if (keyInfo.Key == ConsoleKey.S)
-                    {
-                        if (IsPaused)
-                        {
-                            IsPlaying = false;
-                            command = "s";
-                            IsPaused = false;
-                        }
+                        bricks[i, j] = new Brick(j * 5, i * 2);
                     }
                 }
-            }
 
-            static void Menu_func(out bool restartGame, out string command)
-            {
-                Console.Clear();
-                Meny();
-                Console.Write("\n> ");
-                command = Console.ReadLine();
                 restartGame = false;
             }
+        }
 
-            static string Help_Func()
-            {
-                string command;
-                Console.Clear();
-                Hjälp();
-                Console.Write("> ");
-                command = Console.ReadLine();
-                return command;
-            }
+        static void Menu_func(out bool restartGame, out string command)
+        {
+            Console.Clear();
+            Meny();
+            Console.Write("\n> ");
+            command = Console.ReadLine();
+            restartGame = false;
+        }
+
+        static string Help_Func()
+        {
+            string command;
+            Console.Clear();
+            Hjälp();
+            Console.Write("> ");
+            command = Console.ReadLine();
+            return command;
         }
 
         public static void Meny()
@@ -231,9 +246,9 @@ namespace BREAKOUT_1
             Console.WriteLine("[H]jälp");
             Console.WriteLine("[S]luta");
         }
+
         public static void Hjälp()
         {
-
             Console.WriteLine("Här hittar du spelinstruktionerna!\n");
 
             Console.WriteLine("Använd pilarna för att styra padel.\n");
@@ -245,8 +260,8 @@ namespace BREAKOUT_1
             Console.WriteLine("När antal försök når noll kommer du att förlora spelet. du får starta om spelet.\n\n");
 
             Console.WriteLine("skriv [m] om du vill gå tillbaka till meny, eller [s] om vill avsluta application");
-
         }
+
         protected static void WriteAt(string s, int x, int y)
         {
             try
@@ -262,4 +277,3 @@ namespace BREAKOUT_1
         }
     }
 }
-
