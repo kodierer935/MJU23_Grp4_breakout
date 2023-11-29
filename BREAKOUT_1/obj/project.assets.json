@@ -8,23 +8,23 @@
     "net6.0": []
   },
   "packageFolders": {
-    "C:\\Users\\moham\\.nuget\\packages\\": {},
+    "C:\\Users\\Erik\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\moham\\Source\\Repos\\MJU23_Grp4_breakout\\BREAKOUT_1\\BREAKOUT_1.csproj",
+      "projectUniqueName": "C:\\Users\\Erik\\Source\\Repos\\MJU23_Grp4_breakout\\BREAKOUT_1\\BREAKOUT_1.csproj",
       "projectName": "BREAKOUT_1",
-      "projectPath": "C:\\Users\\moham\\Source\\Repos\\MJU23_Grp4_breakout\\BREAKOUT_1\\BREAKOUT_1.csproj",
-      "packagesPath": "C:\\Users\\moham\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\moham\\Source\\Repos\\MJU23_Grp4_breakout\\BREAKOUT_1\\obj\\",
+      "projectPath": "C:\\Users\\Erik\\Source\\Repos\\MJU23_Grp4_breakout\\BREAKOUT_1\\BREAKOUT_1.csproj",
+      "packagesPath": "C:\\Users\\Erik\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Erik\\Source\\Repos\\MJU23_Grp4_breakout\\BREAKOUT_1\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\moham\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Erik\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -67,7 +67,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.403\\RuntimeIdentifierGraph.json"
       }
     }
   }

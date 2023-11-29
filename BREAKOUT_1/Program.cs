@@ -116,7 +116,15 @@ namespace BREAKOUT_1
                                 {
                                     brick.IsVisible = false;
                                     ball.ChangeY *= -1;
-                                    poäng = poäng + 1;
+                                    if (i >= 6)
+                                        poäng += 1;
+                                    else if (i >= 3)
+                                        poäng += 3;
+                                    else if (i == 2)
+                                        poäng += 5;
+                                    else
+                                        poäng += 7;
+
                                 }
                             }
                         }
@@ -142,7 +150,7 @@ namespace BREAKOUT_1
 
                     Pause_Func(ref IsPlaying, ref IsPaused, ref restartGame, ref command);
 
-                    Thread.Sleep(5);
+                    Thread.Sleep(50);
                 }
 
                 Restart(ref ball, ref restartGame, brickRows, brickCols, ref bricks);
