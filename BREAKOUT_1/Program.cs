@@ -32,10 +32,16 @@ namespace BREAKOUT_1
             IsVisible = true;
         }
     }
-    internal class Program
+        internal class Program
     {
+        protected static int origRow;
+        protected static int origCol;
         static void Main(string[] args)
         {
+            origRow = Console.CursorTop;
+            origCol = Console.CursorLeft;
+            int poäng = 0;
+            int brickIndex = 0;
             Ball ball = new Ball(Console.WindowWidth / 2, Console.WindowHeight - 2, 1, -1);
 
             bool IsPlaying = false;
@@ -43,8 +49,8 @@ namespace BREAKOUT_1
             bool restartGame = false;
 
             string command = "m";
-            int brickRows = 4;
-            int brickCols = Console.WindowWidth / 5;
+            int brickRows = 8;
+            int brickCols = 14;
             Brick[,] bricks = new Brick[brickRows, brickCols];
 
             for (int i = 0; i < brickRows; i++)
@@ -54,7 +60,6 @@ namespace BREAKOUT_1
                     bricks[i, j] = new Brick(j * 5, i * 2);
                 }
             }
-
             while (true)
             {
                 while (IsPlaying == false)
@@ -92,6 +97,7 @@ namespace BREAKOUT_1
                     if (!IsPaused)
                     {
                         Console.Clear();
+                        WriteAt($"Poäng: {poäng}", 0, 20);
 
                         ball.X += ball.ChangeX;
                         ball.Y += ball.ChangeY;
@@ -110,6 +116,7 @@ namespace BREAKOUT_1
                                 {
                                     brick.IsVisible = false;
                                     ball.ChangeY *= -1;
+                                    poäng = poäng + 1;
                                 }
                             }
                         }
@@ -240,5 +247,19 @@ namespace BREAKOUT_1
             Console.WriteLine("skriv [m] om du vill gå tillbaka till meny, eller [s] om vill avsluta application");
 
         }
+        protected static void WriteAt(string s, int x, int y)
+        {
+            try
+            {
+                Console.SetCursorPosition(origCol + x, origRow + y);
+                Console.Write(s);
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Console.Clear();
+                Console.WriteLine(e.Message);
+            }
+        }
     }
 }
+
