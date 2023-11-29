@@ -176,12 +176,12 @@
                     {
                         ConsoleKeyInfo key = Console.ReadKey(true);
                         if (key.Key == ConsoleKey.LeftArrow && paddle.X > 0)
-                        {
-                            paddle.X--;
+                        
+                            paddle.X -= 3;
                         }
                         else if (key.Key == ConsoleKey.RightArrow && paddle.X < Console.WindowWidth - paddle.Length)
                         {
-                            paddle.X++;
+                            paddle.X += 3;
                         }
                         else if (key.Key == ConsoleKey.Spacebar)
                         {
