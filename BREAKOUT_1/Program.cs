@@ -18,6 +18,19 @@ namespace BREAKOUT_1
             ChangeY = changeY;
         }
     }
+    public class Paddle
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+        public int Length { get; set; }
+
+        public Paddle(int x, int y, int length)
+        {
+            X = x;
+            Y = y;
+            Length = length;
+        }
+    }
 
     public class Brick
     {
@@ -42,9 +55,10 @@ namespace BREAKOUT_1
             origCol = Console.CursorLeft;
             int poäng = 0;
             int Lives = 3;
-            int brickIndex = 0;
             int current_level = 1;
+
             Ball ball = new Ball(Console.WindowWidth / 2, Console.WindowHeight - 2, 1, -1);
+            Paddle paddle = new Paddle(Console.WindowWidth / 2 - 3, Console.WindowHeight - 1, 6);
 
             bool IsPlaying = false;
             bool IsPaused = false;
@@ -106,20 +120,29 @@ namespace BREAKOUT_1
                         ball.X += ball.ChangeX;
                         ball.Y += ball.ChangeY;
 
+                        // Bounce på sidoväggarna
                         if (ball.X <= 0 || ball.X >= Console.WindowWidth - 2)
                             ball.ChangeX *= -1;
+
+                        // Bounce på taket
                         if (ball.Y < 0)
                             ball.ChangeY *= -1;
-                        if(ball.Y >= Console.WindowHeight - 2)
+
+                        // Bounce på paddeln
+                        if (ball.Y == paddle.Y - 1 && ball.X >= paddle.X && ball.X <= paddle.X + paddle.Length - 1)
+                            ball.ChangeY *= -1;
+
+
+                        if (ball.Y > Console.WindowHeight + 2)
                         {
                             Lives--;
                             ball = new Ball(Console.WindowWidth / 2, Console.WindowHeight - 2, 1, -1);
                         }
-                        if(Lives == 0)
+                        if (Lives == 0)
                         {
                             poäng = Lose(poäng, out Lives, out IsPlaying, out IsPaused, out restartGame, out command);
 
-                        }                        
+                        }
 
                         for (int i = 0; i < brickRows; i++)
                         {
@@ -142,15 +165,28 @@ namespace BREAKOUT_1
                                 }
                             }
                         }
-                        
+                        // Rita paddeln
+                        Console.SetCursorPosition(paddle.X, paddle.Y);
+                        Console.Write(new string('-', paddle.Length));
 
+                        // Rita bollen
                         if (Console.WindowHeight >= ball.Y && Console.WindowWidth >= ball.X)
                         {
                             int clampedX = Math.Clamp(ball.X, 0, Console.WindowWidth - 1);
                             int clampedY = Math.Clamp(ball.Y, 0, Console.WindowHeight - 1);
 
                             Console.SetCursorPosition(clampedX, clampedY);
-                            Console.Write("*");
+                            Console.Write("O");
+                        }
+
+                        // Rita brickorna
+                        foreach (var brick in bricks)
+                        {
+                            if (brick.IsVisible)
+                            {
+                                Console.SetCursorPosition(brick.X, brick.Y);
+                                Console.Write("[___]");
+                            }
                         }
 
                         if (current_level == 1)
@@ -163,7 +199,7 @@ namespace BREAKOUT_1
                                     Console.Write("[___]");
                                 }
                             }
-                        }else if (current_level == 2 && AllBricksInvisible(bricks) == true) 
+                        } else if (current_level == 2 && AllBricksInvisible(bricks) == true)
                         {
                             foreach (var brick in bricks)
                             {
@@ -174,186 +210,208 @@ namespace BREAKOUT_1
                                 }
                             }
                         }
+                        // Rörelse av paddeln
+                        if (Console.KeyAvailable)
+                        {
+                            ConsoleKeyInfo key = Console.ReadKey(true);
+                            if (key.Key == ConsoleKey.LeftArrow && paddle.X > 0)
+                            {
+                                paddle.X -= 3;
+                            }
+                            else if (key.Key == ConsoleKey.RightArrow && paddle.X < Console.WindowWidth - paddle.Length)
+                            {
+                                paddle.X += 3;
+                            }
+                            else if (key.Key == ConsoleKey.Spacebar)
+                            {
+                                IsPaused = !IsPaused;
+                                Console.Clear();
+                                if (IsPaused)
+                                {
+                                    Console.WriteLine("Spel pausat. tryck 'Spacebar' för att försätta.\ntryck 'm' för att gå till meny.\ntryck 's' för att avsluta spelet.");
+                                }
+                            }
+                        }
+
+                        if (current_level == 2 && AllBricksInvisible(bricks) == true)
+                        {
+                            poäng = Winner(poäng, out Lives, out IsPlaying, out IsPaused, out restartGame, out command);
+                            current_level = 1;
+
+                        }
+                        Pause_Func(ref IsPlaying, ref IsPaused, ref restartGame, ref command);
+
+                        Thread.Sleep(50);
                     }
 
-                    if (current_level == 2 && AllBricksInvisible(bricks) == true)
-                    {
-                        poäng = Winner(poäng, out Lives, out IsPlaying, out IsPaused, out restartGame, out command);
-                        current_level = 1;
-
-                    }
-                    Pause_Func(ref IsPlaying, ref IsPaused, ref restartGame, ref command);
-
-                    Thread.Sleep(50);
+                    Restart(ref ball, ref restartGame, brickRows, brickCols, ref bricks);
                 }
 
-                Restart(ref ball, ref restartGame, brickRows, brickCols, ref bricks);
-            }
-
-            static void Restart(ref Ball ball, ref bool restartGame, int brickRows, int brickCols, ref Brick[,] bricks)
-            {
-                if (restartGame)
+                static void Restart(ref Ball ball, ref bool restartGame, int brickRows, int brickCols, ref Brick[,] bricks)
                 {
-
-                    ball = new Ball(Console.WindowWidth / 2, Console.WindowHeight - 2, 1, -1);
-                    bricks = new Brick[brickRows, brickCols];
-                    for (int i = 0; i < brickRows; i++)
+                    if (restartGame)
                     {
-                        for (int j = 0; j < brickCols; j++)
+
+                        ball = new Ball(Console.WindowWidth / 2, Console.WindowHeight - 2, 1, -1);
+                        bricks = new Brick[brickRows, brickCols];
+                        for (int i = 0; i < brickRows; i++)
                         {
-                            bricks[i, j] = new Brick(j * 5, i * 2);
+                            for (int j = 0; j < brickCols; j++)
+                            {
+                                bricks[i, j] = new Brick(j * 5, i * 2);
+                            }
+                        }
+
+                        restartGame = false;
+                    }
+                }
+
+                static void Pause_Func(ref bool IsPlaying, ref bool IsPaused, ref bool restartGame, ref string command)
+                {
+                    if (Console.KeyAvailable)
+                    {
+                        ConsoleKeyInfo keyInfo = Console.ReadKey(true);
+                        if (keyInfo.Key == ConsoleKey.Spacebar)
+                        {
+                            IsPaused = !IsPaused;
+                            Console.Clear();
+                            if (IsPaused)
+                            {
+                                Console.WriteLine("Spel pausat. tryck 'Spacebar' för att försätta.\ntryck 'm' för att gå till meny.\ntryck 's' för att avsluta spelet.");
+                            }
+                        }
+                        else if (keyInfo.Key == ConsoleKey.M)
+                        {
+                            if (IsPaused)
+                            {
+                                IsPlaying = false;
+                                command = "M";
+                                IsPaused = false;
+                                restartGame = true;
+                            }
+                        }
+                        else if (keyInfo.Key == ConsoleKey.S)
+                        {
+                            if (IsPaused)
+                            {
+                                IsPlaying = false;
+                                command = "s";
+                                IsPaused = false;
+                            }
                         }
                     }
+                }
 
+                static void Menu_func(out bool restartGame, out string command)
+                {
+                    Console.Clear();
+                    Meny();
+                    Console.Write("\n> ");
+                    command = Console.ReadLine();
                     restartGame = false;
                 }
-            }
 
-            static void Pause_Func(ref bool IsPlaying, ref bool IsPaused, ref bool restartGame, ref string command)
-            {
-                if (Console.KeyAvailable)
+                static string Help_Func()
                 {
-                    ConsoleKeyInfo keyInfo = Console.ReadKey(true);
-                    if (keyInfo.Key == ConsoleKey.Spacebar)
-                    {
-                        IsPaused = !IsPaused;
-                        Console.Clear();
-                        if (IsPaused)
-                        {
-                            Console.WriteLine("Spel pausat. tryck 'Spacebar' för att försätta.\ntryck 'm' för att gå till meny.\ntryck 's' för att avsluta spelet.");
-                        }
-                    }
-                    else if (keyInfo.Key == ConsoleKey.M)
-                    {
-                        if (IsPaused)
-                        {
-                            IsPlaying = false;
-                            command = "M";
-                            IsPaused = false;
-                            restartGame = true;
-                        }
-                    }
-                    else if (keyInfo.Key == ConsoleKey.S)
-                    {
-                        if (IsPaused)
-                        {
-                            IsPlaying = false;
-                            command = "s";
-                            IsPaused = false;
-                        }
-                    }
+                    string command;
+                    Console.Clear();
+                    Hjälp();
+                    Console.Write("> ");
+                    command = Console.ReadLine();
+                    return command;
+                }
+
+                static int Lose(int poäng, out int Lives, out bool IsPlaying, out bool IsPaused, out bool restartGame, out string command)
+                {
+                    IsPaused = false;
+                    IsPlaying = false;
+                    restartGame = true;
+
+                    Console.Clear();
+                    WriteAt($"Game Over", Console.WindowWidth / 3, Console.WindowHeight / 3);
+                    WriteAt($"poäng: {poäng}", Console.WindowWidth / 3, (Console.WindowHeight / 3) + 1);
+                    WriteAt("Tryck [n] för nytt spel", Console.WindowWidth / 3, (Console.WindowHeight / 3) + 2);
+                    WriteAt("tryck [m] för meny", Console.WindowWidth / 3, (Console.WindowHeight / 3) + 3);
+                    WriteAt("tryck [s] för att sluta", Console.WindowWidth / 3, (Console.WindowHeight / 3) + 4);
+                    WriteAt($"> ", Console.WindowWidth / 3, (Console.WindowHeight / 3) + 5);
+                    Console.SetCursorPosition((Console.WindowWidth / 3) + 2, (Console.WindowHeight / 3) + 5);
+                    command = Console.ReadLine();
+                    Lives = 3;
+                    poäng = 0;
+                    return poäng;
+                }
+
+                static int Winner(int poäng, out int Lives, out bool IsPlaying, out bool IsPaused, out bool restartGame, out string command)
+                {
+                    IsPaused = false;
+                    IsPlaying = false;
+                    restartGame = true;
+
+                    Console.Clear();
+                    WriteAt($"** Du Vinner **", Console.WindowWidth / 3, Console.WindowHeight / 3);
+                    WriteAt($" poäng: {poäng}", Console.WindowWidth / 3, (Console.WindowHeight / 3) + 1);
+                    WriteAt("  Tryck [n] för nytt spel", Console.WindowWidth / 3, (Console.WindowHeight / 3) + 2);
+                    WriteAt("  tryck [m] för meny", Console.WindowWidth / 3, (Console.WindowHeight / 3) + 3);
+                    WriteAt("  tryck [s] för att sluta", Console.WindowWidth / 3, (Console.WindowHeight / 3) + 4);
+                    WriteAt($"> ", Console.WindowWidth / 3, (Console.WindowHeight / 3) + 5);
+                    Console.SetCursorPosition((Console.WindowWidth / 3) + 2, (Console.WindowHeight / 3) + 5);
+                    command = Console.ReadLine();
+                    Lives = 3;
+                    poäng = 0;
+                    return poäng;
                 }
             }
 
-            static void Menu_func(out bool restartGame, out string command)
+            static bool AllBricksInvisible(Brick[,] bricks)
             {
-                Console.Clear();
-                Meny();
-                Console.Write("\n> ");
-                command = Console.ReadLine();
-                restartGame = false;
-            }
-
-            static string Help_Func()
-            {
-                string command;
-                Console.Clear();
-                Hjälp();
-                Console.Write("> ");
-                command = Console.ReadLine();
-                return command;
-            }
-
-            static int Lose(int poäng, out int Lives, out bool IsPlaying, out bool IsPaused, out bool restartGame, out string command)
-            {
-                IsPaused = false;
-                IsPlaying = false;
-                restartGame = true;
-
-                Console.Clear();
-                WriteAt($"Game Over", Console.WindowWidth / 3, Console.WindowHeight / 3);
-                WriteAt($"poäng: {poäng}", Console.WindowWidth / 3, (Console.WindowHeight / 3) + 1);
-                WriteAt("Tryck [n] för nytt spel", Console.WindowWidth / 3, (Console.WindowHeight / 3) + 2);
-                WriteAt("tryck [m] för meny", Console.WindowWidth / 3, (Console.WindowHeight / 3) + 3);
-                WriteAt("tryck [s] för att sluta", Console.WindowWidth / 3, (Console.WindowHeight / 3) + 4);
-                WriteAt($"> ", Console.WindowWidth / 3, (Console.WindowHeight / 3) + 5);
-                Console.SetCursorPosition((Console.WindowWidth / 3) + 2, (Console.WindowHeight / 3) + 5);
-                command = Console.ReadLine();
-                Lives = 3;
-                poäng = 0;
-                return poäng;
-            }
-
-            static int Winner(int poäng, out int Lives, out bool IsPlaying, out bool IsPaused, out bool restartGame, out string command)
-            {
-                IsPaused = false;
-                IsPlaying = false;
-                restartGame = true;
-
-                Console.Clear();
-                WriteAt($"** Du Vinner **", Console.WindowWidth / 3, Console.WindowHeight / 3);
-                WriteAt($" poäng: {poäng}", Console.WindowWidth / 3, (Console.WindowHeight / 3) + 1);
-                WriteAt("  Tryck [n] för nytt spel", Console.WindowWidth / 3, (Console.WindowHeight / 3) + 2);
-                WriteAt("  tryck [m] för meny", Console.WindowWidth / 3, (Console.WindowHeight / 3) + 3);
-                WriteAt("  tryck [s] för att sluta", Console.WindowWidth / 3, (Console.WindowHeight / 3) + 4);
-                WriteAt($"> ", Console.WindowWidth / 3, (Console.WindowHeight / 3) + 5);
-                Console.SetCursorPosition((Console.WindowWidth / 3) + 2, (Console.WindowHeight / 3) + 5);
-                command = Console.ReadLine();
-                Lives = 3;
-                poäng = 0;
-                return poäng;
-            }
-        }
-
-        private static bool AllBricksInvisible(Brick[,] bricks)
-        {
-            foreach (var brick in bricks)
-            {
-                if (brick.IsVisible)
+                foreach (var brick in bricks)
                 {
-                    return false;
+                    if (brick.IsVisible)
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            static void Meny()
+            {
+                Console.WriteLine("Välkommen till Breakout spel, Skriv bokstav i hakparenteser för att välja !!!\n\n");
+
+                Console.WriteLine("[N]y spel");
+                Console.WriteLine("[H]jälp");
+                Console.WriteLine("[S]luta");
+            }
+            static void Hjälp()
+            {
+
+                Console.WriteLine("Här hittar du spelinstruktionerna!\n");
+
+                Console.WriteLine("Använd pilarna för att styra padel.\n");
+                Console.WriteLine("tryck 'Spacebar' för att pausa spelet\n");
+
+                Console.WriteLine("Du måste få bollen att träffa brickan. När bollen träffar brickan försvinner brickan.\nDin uppgift är att få alla brickor på skärmen att försvinna.\n");
+                Console.WriteLine("När du är klar första gången bör du göra samma sak igen. Efter att ha förstört brickorna andra gången vinner du.\n");
+                Console.WriteLine("Bollen får inte falla till botten. Om det går ner kommer du att förlora ett av dina tre försök.\n ");
+                Console.WriteLine("När antal försök når noll kommer du att förlora spelet. du får starta om spelet.\n\n");
+
+                Console.WriteLine("skriv [m] om du vill gå tillbaka till meny, eller [s] om vill avsluta application");
+
+            }
+            static void WriteAt(string s, int x, int y)
+            {
+                try
+                {
+                    Console.SetCursorPosition(origCol + x, origRow + y);
+                    Console.Write(s);
+                }
+                catch (ArgumentOutOfRangeException e)
+                {
+                    Console.Clear();
+                    Console.WriteLine(e.Message);
                 }
             }
-            return true; 
         }
-
-        public static void Meny()
-        {
-            Console.WriteLine("Välkommen till Breakout spel, Skriv bokstav i hakparenteser för att välja !!!\n\n");
-
-            Console.WriteLine("[N]y spel");
-            Console.WriteLine("[H]jälp");
-            Console.WriteLine("[S]luta");
-        }
-        public static void Hjälp()
-        {
-
-            Console.WriteLine("Här hittar du spelinstruktionerna!\n");
-
-            Console.WriteLine("Använd pilarna för att styra padel.\n");
-            Console.WriteLine("tryck 'Spacebar' för att pausa spelet\n");
-
-            Console.WriteLine("Du måste få bollen att träffa brickan. När bollen träffar brickan försvinner brickan.\nDin uppgift är att få alla brickor på skärmen att försvinna.\n");
-            Console.WriteLine("När du är klar första gången bör du göra samma sak igen. Efter att ha förstört brickorna andra gången vinner du.\n");
-            Console.WriteLine("Bollen får inte falla till botten. Om det går ner kommer du att förlora ett av dina tre försök.\n ");
-            Console.WriteLine("När antal försök når noll kommer du att förlora spelet. du får starta om spelet.\n\n");
-
-            Console.WriteLine("skriv [m] om du vill gå tillbaka till meny, eller [s] om vill avsluta application");
-
-        }
-        protected static void WriteAt(string s, int x, int y)
-        {
-            try
-            {
-                Console.SetCursorPosition(origCol + x, origRow + y);
-                Console.Write(s);
-            }
-            catch (ArgumentOutOfRangeException e)
-            {
-                Console.Clear();
-                Console.WriteLine(e.Message);
-            }
-        }
-    }
+    } 
 }
 
