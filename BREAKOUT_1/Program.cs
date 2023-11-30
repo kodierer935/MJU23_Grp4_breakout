@@ -259,7 +259,7 @@ namespace BREAKOUT_1
                     {
                         ball = new Ball(Console.WindowWidth / 2, Console.WindowHeight - 2, 1, -1);
                         bricks = new Brick[brickRows, brickCols];
-                        paddle = new Paddle(Console.WindowWidth / 2 - 3, Console.WindowHeight - 1, 6);
+                        paddle.X = Console.WindowWidth / 2 - 3;
 
                         for (int i = 0; i < brickRows; i++)
                         {
