@@ -176,7 +176,7 @@
                     {
                         ConsoleKeyInfo key = Console.ReadKey(true);
                         if (key.Key == ConsoleKey.LeftArrow && paddle.X > 0)
-                        
+                        {
                             paddle.X -= 3;
                         }
                         else if (key.Key == ConsoleKey.RightArrow && paddle.X < Console.WindowWidth - paddle.Length)
@@ -194,7 +194,7 @@
                         }
                     }
 
-                    Thread.Sleep(50);
+                    Thread.Sleep(60);
                 }
 
                 Restart(ref ball, ref restartGame, brickRows, brickCols, ref bricks);
