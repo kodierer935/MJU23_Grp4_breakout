@@ -67,13 +67,28 @@ namespace BREAKOUT_1
             string command = "m";
             int brickRows = 8;
             int brickCols = 14;
+            int brickRowsScreen2 = 8;
+            int brickColsScreen2 = 14;
             Brick[,] bricks = new Brick[brickRows, brickCols];
+            Brick[,] bricksScreen1 = InitializeBricks(brickRows, brickCols);
+            Brick[,] bricksScreen2 = InitializeBricks(brickRowsScreen2, brickColsScreen2); ;
 
             for (int i = 0; i < brickRows; i++)
             {
                 for (int j = 0; j < brickCols; j++)
                 {
-                    bricks[i, j] = new Brick(j * 5, i * 2);
+                    bricksScreen1[i, j] = new Brick(j * 5, i * 2);
+                }
+            }
+
+            if (current_level == 2)
+            {
+                for (int i = 0; i < brickRowsScreen2; i++)
+                {
+                    for (int j = 0; j < brickColsScreen2; j++)
+                    {
+                        bricksScreen2[i, j] = new Brick(j * 5, i * 2);
+                    }
                 }
             }
             while (true)
@@ -89,6 +104,7 @@ namespace BREAKOUT_1
                     {
                         IsPlaying = true;
                         restartGame = true;
+                        Restart( ref ball, ref restartGame,  brickRows,  brickCols, ref bricks, paddle, ref current_level, bricksScreen1, brickRowsScreen2, brickColsScreen2, bricksScreen2);
                     }
                     else if (command == "H" || command == "h")
                     {
@@ -137,6 +153,7 @@ namespace BREAKOUT_1
                         {
                             Lives--;
                             ball = new Ball(Console.WindowWidth / 2, Console.WindowHeight - 2, 1, -1);
+                            paddle = new Paddle(Console.WindowWidth / 2 - 3, Console.WindowHeight - 1, 6);
                         }
                         if (Lives == 0)
                         {
@@ -144,27 +161,56 @@ namespace BREAKOUT_1
 
                         }
 
-                        for (int i = 0; i < brickRows; i++)
+                        if (current_level == 1)
                         {
-                            for (int j = 0; j < brickCols; j++)
+                            for (int i = 0; i < brickRows; i++)
                             {
-                                Brick brick = bricks[i, j];
-                                if (brick.IsVisible && ball.X >= brick.X && ball.X < brick.X + 5 && ball.Y == brick.Y)
+                                for (int j = 0; j < brickCols; j++)
                                 {
-                                    brick.IsVisible = false;
-                                    ball.ChangeY *= -1;
-                                    if (i >= 6)
-                                        poäng += 1;
-                                    else if (i >= 3)
-                                        poäng += 3;
-                                    else if (i == 2)
-                                        poäng += 5;
-                                    else
-                                        poäng += 7;
+                                    Brick brick = bricksScreen1[i, j];
+                                    if (brick.IsVisible && ball.X >= brick.X && ball.X < brick.X + 5 && ball.Y == brick.Y)
+                                    {
+                                        brick.IsVisible = false;
+                                        ball.ChangeY *= -1;
 
+                                        if (i >= 6)
+                                            poäng += 1;
+                                        else if (i >= 3)
+                                            poäng += 3;
+                                        else if (i == 2)
+                                            poäng += 5;
+                                        else
+                                            poäng += 7;
+
+                                    }
                                 }
                             }
                         }
+
+                        if (current_level == 2)
+                        {
+                            for (int i = 0; i < brickRowsScreen2; i++)
+                            {
+                                for (int j = 0; j < brickColsScreen2; j++)
+                                {
+                                    Brick brick = bricksScreen2[i, j];
+                                    if (brick.IsVisible && ball.X >= brick.X && ball.X < brick.X + 5 && ball.Y == brick.Y)
+                                    {
+                                        brick.IsVisible = false;
+                                        ball.ChangeY *= -1;
+                                        if (i >= 6)
+                                            poäng += 1;
+                                        else if (i >= 3)
+                                            poäng += 3;
+                                        else if (i == 2)
+                                            poäng += 5;
+                                        else
+                                            poäng += 7;
+                                    }
+                                }
+                            }
+                        }
+
                         // Rita paddeln
                         Console.SetCursorPosition(paddle.X, paddle.Y);
                         Console.Write(new string('-', paddle.Length));
@@ -179,37 +225,23 @@ namespace BREAKOUT_1
                             Console.Write("O");
                         }
 
-                        // Rita brickorna
-                        foreach (var brick in bricks)
+                        if (current_level == 1)
                         {
-                            if (brick.IsVisible)
+                            DisplayBricks(bricksScreen1);
+                            if (AllBricksInvisible(bricksScreen1))
                             {
-                                Console.SetCursorPosition(brick.X, brick.Y);
-                                Console.Write("[___]");
+                                current_level = 2;
+                            }
+                        }
+                        else if (current_level == 2)
+                        {
+                            DisplayBricks(bricksScreen2);
+                            if (AllBricksInvisible(bricksScreen2))
+                            {
+                                poäng = Winner(poäng, out Lives, out IsPlaying, out IsPaused, out restartGame, out command, ref current_level);                               
                             }
                         }
 
-                        if (current_level == 1)
-                        {
-                            foreach (var brick in bricks)
-                            {
-                                if (brick.IsVisible)
-                                {
-                                    Console.SetCursorPosition(brick.X, brick.Y);
-                                    Console.Write("[___]");
-                                }
-                            }
-                        } else if (current_level == 2 && AllBricksInvisible(bricks) == true)
-                        {
-                            foreach (var brick in bricks)
-                            {
-                                if (brick.IsVisible)
-                                {
-                                    Console.SetCursorPosition(brick.X, brick.Y);
-                                    Console.Write("[___]");
-                                }
-                            }
-                        }
                         // Rörelse av paddeln
                         if (Console.KeyAvailable)
                         {
@@ -222,82 +254,69 @@ namespace BREAKOUT_1
                             {
                                 paddle.X += 3;
                             }
-                            else if (key.Key == ConsoleKey.Spacebar)
+                            else if (!IsPaused &&key.Key == ConsoleKey.Spacebar)
                             {
-                                IsPaused = !IsPaused;
+                                IsPaused = true;
                                 Console.Clear();
                                 if (IsPaused)
                                 {
                                     Console.WriteLine("Spel pausat. tryck 'Spacebar' för att försätta.\ntryck 'm' för att gå till meny.\ntryck 's' för att avsluta spelet.");
                                 }
                             }
+                            
                         }
-
-                        if (current_level == 2 && AllBricksInvisible(bricks) == true)
-                        {
-                            poäng = Winner(poäng, out Lives, out IsPlaying, out IsPaused, out restartGame, out command);
-                            current_level = 1;
-
-                        }
-                        Pause_Func(ref IsPlaying, ref IsPaused, ref restartGame, ref command);
 
                         Thread.Sleep(50);
                     }
+                    else
+                    {
+                        pause(ref IsPlaying, ref IsPaused, ref restartGame, ref command); // Introduce a small delay to avoid excessive CPU usage
+                    }
 
-                    Restart(ref ball, ref restartGame, brickRows, brickCols, ref bricks);
+                    Restart(ref ball, ref restartGame, brickRows, brickCols, ref bricks, paddle, ref current_level, bricksScreen1, brickRowsScreen2, brickColsScreen2, bricksScreen2);
                 }
 
-                static void Restart(ref Ball ball, ref bool restartGame, int brickRows, int brickCols, ref Brick[,] bricks)
+                static void Restart(ref Ball ball, ref bool restartGame, int brickRows, int brickCols, ref Brick[,] bricks, Paddle paddle, ref int current_level, Brick[,] bricksScreen1, int brickRowsScreen2, int brickColsScreen2, Brick[,] bricksScreen2)
                 {
                     if (restartGame)
                     {
 
                         ball = new Ball(Console.WindowWidth / 2, Console.WindowHeight - 2, 1, -1);
                         bricks = new Brick[brickRows, brickCols];
-                        for (int i = 0; i < brickRows; i++)
+                        paddle.X = Console.WindowWidth / 2 - 3;
+
+                        if (current_level == 1)
                         {
-                            for (int j = 0; j < brickCols; j++)
+                            for (int i = 0; i < brickRows; i++)
                             {
-                                bricks[i, j] = new Brick(j * 5, i * 2);
+                                for (int j = 0; j < brickCols; j++)
+                                {
+                                    bricksScreen1[i, j] = new Brick(j * 5, i * 2);
+                                }
+                            }
+
+                            for (int i = 0;i < brickRowsScreen2; i++)
+                            {
+                                for(int j = 0;j < brickColsScreen2; j++)
+                                {
+                                    bricksScreen2[i, j] = new Brick(j * 5, i * 2);
+                                }
                             }
                         }
 
                         restartGame = false;
+                        current_level = 1;  // Reset the current level
                     }
                 }
 
-                static void Pause_Func(ref bool IsPlaying, ref bool IsPaused, ref bool restartGame, ref string command)
+                static void DisplayBricks(Brick[,] bricks)
                 {
-                    if (Console.KeyAvailable)
+                    foreach (var brick in bricks)
                     {
-                        ConsoleKeyInfo keyInfo = Console.ReadKey(true);
-                        if (keyInfo.Key == ConsoleKey.Spacebar)
+                        if (brick.IsVisible)
                         {
-                            IsPaused = !IsPaused;
-                            Console.Clear();
-                            if (IsPaused)
-                            {
-                                Console.WriteLine("Spel pausat. tryck 'Spacebar' för att försätta.\ntryck 'm' för att gå till meny.\ntryck 's' för att avsluta spelet.");
-                            }
-                        }
-                        else if (keyInfo.Key == ConsoleKey.M)
-                        {
-                            if (IsPaused)
-                            {
-                                IsPlaying = false;
-                                command = "M";
-                                IsPaused = false;
-                                restartGame = true;
-                            }
-                        }
-                        else if (keyInfo.Key == ConsoleKey.S)
-                        {
-                            if (IsPaused)
-                            {
-                                IsPlaying = false;
-                                command = "s";
-                                IsPaused = false;
-                            }
+                            Console.SetCursorPosition(brick.X, brick.Y);
+                            Console.Write("[___]");
                         }
                     }
                 }
@@ -341,7 +360,7 @@ namespace BREAKOUT_1
                     return poäng;
                 }
 
-                static int Winner(int poäng, out int Lives, out bool IsPlaying, out bool IsPaused, out bool restartGame, out string command)
+                static int Winner(int poäng, out int Lives, out bool IsPlaying, out bool IsPaused, out bool restartGame, out string command, ref int current_level)
                 {
                     IsPaused = false;
                     IsPlaying = false;
@@ -411,6 +430,49 @@ namespace BREAKOUT_1
                     Console.WriteLine(e.Message);
                 }
             }
+
+            static void pause(ref bool IsPlaying, ref bool IsPaused, ref bool restartGame, ref string command)
+            {
+                if (Console.KeyAvailable)
+                {
+                    ConsoleKeyInfo key = Console.ReadKey(true);
+                    if (key.Key == ConsoleKey.M)
+                    {
+                        IsPlaying = false;
+                        command = "M";
+                        IsPaused = false;
+                        restartGame = true;
+                    }
+                    else if (key.Key == ConsoleKey.S)
+                    {
+                        IsPlaying = false;
+                        command = "s";
+                        IsPaused = false;
+                    }
+                    else if (key.Key == ConsoleKey.Spacebar)
+                    {
+                        IsPaused = false;
+                        Console.Clear();
+                    }
+                }
+
+                Thread.Sleep(10);
+            }
+        }
+
+        private static Brick[,] InitializeBricks(int rows, int cols)
+        {
+            Brick[,] bricks = new Brick[rows, cols];
+
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    bricks[i, j] = new Brick(j * 5, i * 2);
+                }
+            }
+
+            return bricks;
         }
     } 
 }
