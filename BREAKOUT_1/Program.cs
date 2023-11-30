@@ -66,9 +66,9 @@ namespace BREAKOUT_1
 
             string command = "m";
             int brickRows = 8;
-            int brickCols = 14;
+            int brickCols = Console.WindowWidth / 5;
             int brickRowsScreen2 = 8;
-            int brickColsScreen2 = 14;
+            int brickColsScreen2 = Console.WindowWidth / 5;
             Brick[,] bricks = new Brick[brickRows, brickCols];
             Brick[,] bricksScreen1 = InitializeBricks(brickRows, brickCols);
             Brick[,] bricksScreen2 = InitializeBricks(brickRowsScreen2, brickColsScreen2); ;
