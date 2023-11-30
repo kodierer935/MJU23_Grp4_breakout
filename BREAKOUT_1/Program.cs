@@ -137,6 +137,7 @@ namespace BREAKOUT_1
                         {
                             Lives--;
                             ball = new Ball(Console.WindowWidth / 2, Console.WindowHeight - 2, 1, -1);
+                            paddle = new Paddle(Console.WindowWidth / 2 - 3, Console.WindowHeight - 1, 6);
                         }
                         if (Lives == 0)
                         {
@@ -222,15 +223,16 @@ namespace BREAKOUT_1
                             {
                                 paddle.X += 3;
                             }
-                            else if (key.Key == ConsoleKey.Spacebar)
+                            else if (!IsPaused &&key.Key == ConsoleKey.Spacebar)
                             {
-                                IsPaused = !IsPaused;
+                                IsPaused = true;
                                 Console.Clear();
                                 if (IsPaused)
                                 {
                                     Console.WriteLine("Spel pausat. tryck 'Spacebar' för att försätta.\ntryck 'm' för att gå till meny.\ntryck 's' för att avsluta spelet.");
                                 }
                             }
+                            
                         }
 
                         if (current_level == 2 && AllBricksInvisible(bricks) == true)
@@ -239,21 +241,26 @@ namespace BREAKOUT_1
                             current_level = 1;
 
                         }
-                        Pause_Func(ref IsPlaying, ref IsPaused, ref restartGame, ref command);
+
 
                         Thread.Sleep(50);
                     }
+                    else
+                    {
+                        pause(ref IsPlaying, ref IsPaused, ref restartGame, ref command); // Introduce a small delay to avoid excessive CPU usage
+                    }
 
-                    Restart(ref ball, ref restartGame, brickRows, brickCols, ref bricks);
+                    Restart(ref ball, ref restartGame, brickRows, brickCols, ref bricks, paddle);
                 }
 
-                static void Restart(ref Ball ball, ref bool restartGame, int brickRows, int brickCols, ref Brick[,] bricks)
+                static void Restart(ref Ball ball, ref bool restartGame, int brickRows, int brickCols, ref Brick[,] bricks, Paddle paddle)
                 {
                     if (restartGame)
                     {
-
                         ball = new Ball(Console.WindowWidth / 2, Console.WindowHeight - 2, 1, -1);
                         bricks = new Brick[brickRows, brickCols];
+                        paddle = new Paddle(Console.WindowWidth / 2 - 3, Console.WindowHeight - 1, 6);
+
                         for (int i = 0; i < brickRows; i++)
                         {
                             for (int j = 0; j < brickCols; j++)
@@ -265,42 +272,7 @@ namespace BREAKOUT_1
                         restartGame = false;
                     }
                 }
-
-                static void Pause_Func(ref bool IsPlaying, ref bool IsPaused, ref bool restartGame, ref string command)
-                {
-                    if (Console.KeyAvailable)
-                    {
-                        ConsoleKeyInfo keyInfo = Console.ReadKey(true);
-                        if (keyInfo.Key == ConsoleKey.Spacebar)
-                        {
-                            IsPaused = !IsPaused;
-                            Console.Clear();
-                            if (IsPaused)
-                            {
-                                Console.WriteLine("Spel pausat. tryck 'Spacebar' för att försätta.\ntryck 'm' för att gå till meny.\ntryck 's' för att avsluta spelet.");
-                            }
-                        }
-                        else if (keyInfo.Key == ConsoleKey.M)
-                        {
-                            if (IsPaused)
-                            {
-                                IsPlaying = false;
-                                command = "M";
-                                IsPaused = false;
-                                restartGame = true;
-                            }
-                        }
-                        else if (keyInfo.Key == ConsoleKey.S)
-                        {
-                            if (IsPaused)
-                            {
-                                IsPlaying = false;
-                                command = "s";
-                                IsPaused = false;
-                            }
-                        }
-                    }
-                }
+            
 
                 static void Menu_func(out bool restartGame, out string command)
                 {
@@ -410,6 +382,34 @@ namespace BREAKOUT_1
                     Console.Clear();
                     Console.WriteLine(e.Message);
                 }
+            }
+
+            static void pause(ref bool IsPlaying, ref bool IsPaused, ref bool restartGame, ref string command)
+            {
+                if (Console.KeyAvailable)
+                {
+                    ConsoleKeyInfo key = Console.ReadKey(true);
+                    if (key.Key == ConsoleKey.M)
+                    {
+                        IsPlaying = false;
+                        command = "M";
+                        IsPaused = false;
+                        restartGame = true;
+                    }
+                    else if (key.Key == ConsoleKey.S)
+                    {
+                        IsPlaying = false;
+                        command = "s";
+                        IsPaused = false;
+                    }
+                    else if (key.Key == ConsoleKey.Spacebar)
+                    {
+                        IsPaused = false;
+                        Console.Clear();
+                    }
+                }
+
+                Thread.Sleep(10);
             }
         }
     } 
